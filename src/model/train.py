@@ -7,7 +7,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 import mlflow
 
-# define functions
+
 def main(args):
     # Enable autologging
     mlflow.sklearn.autolog()
@@ -28,21 +28,29 @@ def get_csvs_df(path):
     csv_files = glob.glob(f"{path}/*.csv")
     if not csv_files:
         raise RuntimeError(f"No CSV files found in provided data path: {path}")
-    return pd.concat((pd.read_csv(f) for f in csv_files), sort=False)
+    return pd.concat(
+        (pd.read_csv(f) for f in csv_files), sort=False
+    )
 
 
 # Function to split data into train and test sets
 def split_data(df):
-    X = df.drop(columns=['Outcome'])  # Assuming the label column is 'Outcome'
+    X = df.drop(
+        columns=['Outcome']
+    )  # Assuming the label column is 'Outcome'
     y = df['Outcome']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     return X_train, X_test, y_train, y_test
 
 
 # Train the model and log metrics
-def train_model(reg_rate, X_train, X_test, y_train, y_test):
+def train_model(
+    reg_rate, X_train, X_test, y_train, y_test
+):
     with mlflow.start_run():
-        model = LogisticRegression(C=1/reg_rate, solver="liblinear")
+        model = LogisticRegression(
+            C=1/reg_rate, solver="liblinear"
+        )
         model.fit(X_train, y_train)
         # Log accuracy
         score = model.score(X_test, y_test)
