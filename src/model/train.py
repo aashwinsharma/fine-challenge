@@ -1,18 +1,16 @@
 # Import libraries
-
 import argparse
 import glob
 import os
-
 import pandas as pd
-
 from sklearn.linear_model import LogisticRegression
-
+from sklearn.model_selection import train_test_split
+import mlflow
 
 # define functions
 def main(args):
-    # TO DO: enable autologging
-
+    # Enable autologging
+    mlflow.sklearn.autolog()
 
     # read data
     df = get_csvs_df(args.training_data)
@@ -33,12 +31,23 @@ def get_csvs_df(path):
     return pd.concat((pd.read_csv(f) for f in csv_files), sort=False)
 
 
-# TO DO: add function to split data
+# Function to split data into train and test sets
+def split_data(df):
+    X = df.drop(columns=['Outcome'])  # Assuming the label column is 'Outcome'
+    y = df['Outcome']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    return X_train, X_test, y_train, y_test
 
 
+# Train the model and log metrics
 def train_model(reg_rate, X_train, X_test, y_train, y_test):
-    # train model
-    LogisticRegression(C=1/reg_rate, solver="liblinear").fit(X_train, y_train)
+    with mlflow.start_run():
+        model = LogisticRegression(C=1/reg_rate, solver="liblinear")
+        model.fit(X_train, y_train)
+        # Log accuracy
+        score = model.score(X_test, y_test)
+        mlflow.log_metric("accuracy", score)
+        print(f"Model Accuracy: {score}")
 
 
 def parse_args():
