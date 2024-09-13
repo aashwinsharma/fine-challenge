@@ -7,8 +7,8 @@ compute: azureml:compute-production  # Reference to an existing compute resource
 
 inputs:
   input_data: 
-    type: uri_file  # It can be uri_file or uri_folder
-    path: azureml://datastores/my_datastore/paths/my_data.csv  # Path to the input data
+    type: uri_folder
+    path: azureml://subscriptions/3f53d715-2da3-4020-895b-b9b7b6158f70/resourcegroups/challenge-amit/workspaces/development-ml/datastores/workspaceblobstore/paths/UI/2024-09-13_114926_UTC
 
 outputs:
   output_data: 
