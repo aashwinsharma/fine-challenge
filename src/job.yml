@@ -1,15 +1,27 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
-code: model
-command: >-
-  python train.py --training_data ${{inputs.training_data}} --reg_rate ${{inputs.reg_rate}}
+type: command
+description: Train a model
+
+experiment_name: my-experiment
+compute: azureml:compute-production  # Reference to an existing compute resource in your workspace
+
 inputs:
-  training_data: 
-    type: uri_folder 
-    path: azureml://datastores/workspaceblobstore/paths/diabetes-dev.csv  # Path to your training data
-  reg_rate:
-    type: number
-    default: 0.01
-environment: azureml:AzureML-sklearn-0.24-ubuntu18.04-py37-cpu@latest
-compute: azureml:cpu-cluster
-experiment_name: diabetes-training
-description: Train model on diabetes dataset
+  input_data: 
+    type: uri_file  # It can be uri_file or uri_folder
+    path: azureml://datastores/my_datastore/paths/my_data.csv  # Path to the input data
+
+outputs:
+  output_data: 
+    type: uri_folder
+    path: azureml://datastores/my_datastore/paths/output_folder  # Path for the output data
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  python:
+    interpreterPath: python
+    requirements: 
+      file: requirements.txt  # If using a requirements.txt file
+
+command: >
+  python train.py --input_data ${{inputs.input_data}} --output_data ${{outputs.output_data}}
+
