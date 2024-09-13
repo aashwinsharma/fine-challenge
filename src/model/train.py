@@ -6,11 +6,12 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
+
 import mlflow
 import mlflow.sklearn
 
 
-def main(args):  
+def main(args):  # Line 15
     # Enable MLflow autologging
     mlflow.sklearn.autolog()
 
@@ -25,7 +26,7 @@ def main(args):
         train_model(args.reg_rate, X_train, X_test, y_train, y_test)
 
 
-def get_csvs_df(path):  
+def get_csvs_df(path):  # Line 29
     if not os.path.exists(path):
         raise RuntimeError(f"Cannot use non-existent path provided: {path}")
 
@@ -36,7 +37,7 @@ def get_csvs_df(path):
     return pd.concat((pd.read_csv(f) for f in csv_files), sort=False)
 
 
-def split_data(df):
+def split_data(df):  # Line 37
     # Assume 'Diabetic' is the target column
     X = df.drop('Diabetic', axis=1)
     y = df['Diabetic']
@@ -49,7 +50,7 @@ def split_data(df):
     return X_train, X_test, y_train, y_test
 
 
-def train_model(reg_rate, X_train, X_test, y_train, y_test):
+def train_model(reg_rate, X_train, X_test, y_train, y_test):  # Line 47
     # Train logistic regression model
     model = LogisticRegression(C=1 / reg_rate, solver="liblinear")
     model.fit(X_train, y_train)
@@ -59,14 +60,18 @@ def train_model(reg_rate, X_train, X_test, y_train, y_test):
     accuracy = accuracy_score(y_test, y_pred)
     report = classification_report(y_test, y_pred)
 
-    print(f"Accuracy: {accuracy}")
-    print(f"Classification Report:\n{report}")
+    print(
+        f"Accuracy: {accuracy}"
+    )
+    print(
+        f"Classification Report:\n{report}"
+    )
 
     # Log metrics
     mlflow.log_metric("accuracy", accuracy)
 
 
-def parse_args():
+def parse_args():  # Line 63
     # Setup arg parser
     parser = argparse.ArgumentParser()
 
@@ -85,7 +90,7 @@ def parse_args():
 
 
 # Run script
-if __name__ == "__main__":
+if __name__ == "__main__":  # Line 78
     print("\n\n")
     print("*" * 60)
 
